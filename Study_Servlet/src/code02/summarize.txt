@@ -1,0 +1,27 @@
+第二章	服务器的配置的安装
+1.下载java开发工具包(SDK)
+2.下载服务器
+	Apache Tomcat,Macromedia Jrun,Caucho Resin
+3.Apache Tomcat 服务器的配置
+	设置 JAVA_HOME
+	指定服务器端口    Connector元素中prot属性，使用80端口(确保其他服务未占用)，可以在浏览器输入URL时不用输入端口号
+	启用 servlet 重新载入功能，当文件有变化时，不需手动重启    reloadable属性设置为true
+	启用 ROOT 上下文  <Context path="" docBase="Root" debug="0"/>
+	开启servlet调用器 在conf/web.xml 中加入
+		<servlet-mapping>  
+       		<servlet-name>invoker</servlet-name>  
+       		<url-pattern>/servlet/*</url-pattern>  
+   		</servlet-mapping>
+   		Tomcat 7/8 已经不支持，类名暴露，同类名调用混乱，存在后门危险等
+   		解决方法见同包中 InvokerServlet.java
+	增加DOS的内存限制，什么鬼，过~
+	设置CATALINA_HOME   Tomcat的安装根目录
+Macromedia Jrun与Caucho Resin 配置过~~
+4.建立开发环境(eclipse 会搞定)
+	创建开发目录
+	设置 CLASSPATH 添加jar文件
+	API文档
+5.测试系统的设置 能用就ok，在浏览器能显示servlet和jsp内容就行
+
+	
+	
