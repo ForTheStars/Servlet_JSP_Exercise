@@ -1,0 +1,26 @@
+第一章 Servlet与JSP简介
+servlet是运行在Web服务器上或应用服务器上的Java程序，他是一个中间层，负责连接来自We浏览器
+或者其他HTTP客户程序的请求和HTTP服务器上的数据库或应用程序。
+
+1.取读客户发送的显式数据
+	来自HTML表单，applet，HTTP客户程序
+2.取读浏览器发送的隐式请求数据
+	客户端->Web服务器数据(servlet和jsp所在层)
+		用户在表单中输入的显示数据
+		后台HTTP信息
+3.生成结果
+	该过程可能需要访问数据库或调用Web服务或直接计算得出对应的响应等，实际数据存储在数据库中
+	数据库不认识HTTP，也不能返回HTML形式结果，所以需要servlet从HTTP流中提取信息，并与应用程序会话并将结果嵌入到文档中
+4.向客户发送显示数据(文档)
+	格式多种多样：HTML(最常用),XML,GIF图等等，servlet和jsp的任务就是将结果包装到HTML中
+5.发送隐式的HTTP响应数据
+	web中间件(servlet和jsp页面)->客户端
+		文档本身
+		后台的HTTP信息
+JSP作用
+	servlet可以看成含有HTML的java程序，JSP可以看做含有java代码的HTML页面
+	jsp页面可以被翻译成servlet，servlet会被编译，在请求期间运行的是servlet
+	jsp注重html的创建和维护，servlet最适合调用商业逻辑，执行复杂操作
+	对于面向处理的任务，servlet是最佳选择。对于面向表示的任务，jsp是最佳选择
+
+	
