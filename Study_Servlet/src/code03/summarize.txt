@@ -1,0 +1,32 @@
+第三章	servlet基础
+基本架构
+	servlet一般扩展HttpServlet,并依数据发送方式的不同(GET或POST)，覆盖doGet和doPost方法
+	如果希望servlet对GET和POST请求采取同样的行动，只需让doGet调用doPost方法，反之亦然
+	doGet 和 doPost 都接受两个参数，HttpServletRequest 和 HttpServletResponse
+		HttpServletRequest:表单(查询数据),HTTP请求报头,客户的主机名等信息
+		HttpServletResponse 可以指定输出:HTTP状态代码(200,404等)和响应报头等。可获得PrintWriter,用它将文档资料发送给客户
+	doGet 和 doPost抛出ServletException 和 IOException 异常
+servlet生命周期
+	服务器只创建每个servlet的单一实例，每个用户请求都会引发新的线程——将用户请求交给doGet或doPost进行处理
+	首次创建servlet时，它的init方法会得到调用，因此，init是放置一次性设置代码的地方，之后，根据每个用户请求，
+	都会创建一个线程，该线程调用前面创建的实例的service()方法，由此方法依据接受到的HTTP请求，调用doGet,doPost或其他doxxx方法
+	最后如果服务器决定卸载某个servlet,会调用 destroy 方法
+	init方法
+		主要用于一次性的初始化，执行两种类型的初始化
+		1.常规初始化：创建或者载入在servlet生命周期内用到的一些数据，详情见同包中LotteryNumbers.java
+		2.由初始化参数控制的初始化  无需修改servlet源码，可改变特定参数，详情见LotteryNumbers.java 和 web.xml
+	service方法
+		服务器每次接受到对servlet的请求，都会产生一个新的线程，调用service方法检查HTTP请求的类型并相应调用doGet,doPost..方法
+		GET请求起因于URL请求，或没有指定method的表单
+		POST请求于将POST列为method的表单，其他HTTP请求都由定制客户生成
+	destroy方法
+		在服务器移除servlet实例之前，会调用destroy方法，从而使servlet有机会关闭数据库连接，停止后台运行的线程，将cookie和点击数写入磁盘等等操作
+		但是不要将的destory机制作为向磁盘上保存状态的唯一机制，web服务器也可能会崩溃
+SingleThreadModel 接口	
+	系统只生成servlet的单一实例，之后，为每个用户请求创建新的线程，这意味，多个线程会并发访问同个servlet对象
+	所以，doGet 和 doPost 方法要小心对字段或其他共享数据的访问，ps:多个线程并不共享局部变量，因此不需特别保护
+	public class 类名 extends HttpServlet implements SingleThreadModel{}
+	弊端：它可保证在一个实例对象中，一次只将一个请求转给这个对象，但是规范允许服务器使用多个实例来处理请求
+	所以最好使用同步代码块对代码进行访问 synchronized(this){}
+			
+	
