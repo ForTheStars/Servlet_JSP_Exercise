@@ -1,0 +1,63 @@
+第五章	客户请求处理：HTTP 请求报头
+创建高效servlet关键之一，就是了解如何操纵文本传输协议
+表单数据直接来源于用户的输入，请求报头由浏览器间接的设定，并紧跟在初始的GET和POST请求行之后发送
+	例：给出一个HTTP请求，可能是用户向位于 http://www.somebookstore.com/servlet/Search 的servlet提交搜索书籍产生的
+		GET /servlet/Search?keywords=servlet+jsp HTTP/1.1
+		Accept:image/gif,image/jpg,*/*
+		Accept-Encoding:gzip
+		Connection:Keep-Alive
+		Cookie:userID=id45678
+		Host:www.somebookstore.com
+		Referer:http://www.somebookstore.com/findbooks.html
+		User-Agant:Mozilla/4.0 (compatible;MSIE 6.0;Windows NT 5.0)
+	这些报头对servlet的运作至关重要，但他们都不能从表单数据中自动导出，需使用，必须显式读取报头
+请求报头的读取(HTTP 1.0中所有的报头都是可选的，1.1中 只有 Host 是必须的)
+	request.getHeader("name")	不区分大小写
+	上述为读取报头的通用方式，但由于几种报头太过普遍，故而有专门访问方法：getCookies,getAuthType等
+	获取主请求行信息(例第一行)：getMethod,getRequestURL(返回主机名和端口后面的信息),getQueryString(返回表单数据)，getProtocol(请求行第三部分，HTTP/1.1 或 HTTP/1.0)
+了解HTTP1.1 请求报头(HTTP1.1 是 HTTP1.0 的超集)
+	1.Accept:浏览器或其他客户程序能够处理的MIME类型，那些能够以多种格式返回某种资源的servlet，可以检查Accept报头来确定使用哪种格式
+	2.Accept-Charset:表明浏览器可以使用的字符集
+	3.Accept-Encoding:列出客户端可以处理的编码类型
+	4.Accept-Language:在servlet能够以多种语言生成结果时，列出客户程序首选的语言，如en,en-us,da等
+	5.Authorization:在访问密码保护的web页面时，客户用这个报头来标识自己的身份
+	6.Connection:表示客户能否处理连续性HTTP连接，Keep-Alive值的意思应该使用连续性连接
+	7.Content-Length:只适合 POST 请求，用来给定 POST数据的大小
+	8.Cookie:向服务器返回cookie,这些cookie是之前服务器发送给浏览器的
+	9.Host:在HTTP1.1，浏览器和其他客户程序需要指定这个报头，他标明原始URL中给出的主机名和端口号
+   10.If-Modified-Since:仅当页面在指定的日期之后发生更改的情况下，客户程序才希望获取该页面，若没有更新结果，服务器发送304报头
+   11.If-Unmodified-Since:于上述相反，仅当文档比指定的日期要旧时，操作才会继续
+   12.Referer:标明引用Web 页面的URL，列如：页面1 指向 页面2的连接，在请求页面2时，将页面1的URL引入报头中。是一种跟踪请求来源的有用方式
+   13.User-Agent:标识生成请求的浏览器和其他客户程序
+发送压缩Web页面
+	由于极大多数浏览器可以处理gzip压缩后的内容。因此，浏览器对文档进行压缩，使得在网络上传送的文档更小，之后浏览器自动解压(解压缩时间<下载时间)
+	支持这种功能的浏览器都会设置 Accept-Encoding 请求报头，表示他们支持这种功能
+区分不同浏览器类型
+	仅仅在必要时使用 User-Agent,否则你的代码将包含浏览器的各种版本及相关功能表格，难以维护
+	此报头可造假，一些浏览器允许用户修改这个报头   
+依据客户的到达方式定制页面
+	Referer指出，用户单击链接到达当前页面时所处的页面的位置，如果用户直接输入页面地址，那么浏览器就不会发送Referer,request.getHeader("Referer");
+	用处：根据提供的连接，使用户返回之前页面。跟踪标题广告的有效性，或记录显示你的广告的不同网站点记录
+标准 CGI 变量的访问
+	公共网关接口(CGI) 存在一个有些混杂的集合，存储各种与当前相关的信息，有些基于HTTP请求，还有来自socket本身等等
+	request.getServletContext().getRealPath得出URL(主机和端口号后面部分)
+	request.getRemoteHost 获得客户端名称
+	request.getRemoteAddress 获得IP地址
+	servlet 中 CGI 变量的等价物
+		1.AUTH_TYPE	Authorization报头	getAuthType()访问它
+		2.CONTENT_LENGTH	Content-Length报头	getContentLength()访问
+		3.CONTENT_TYPE	如果给出并附加MIME类型，使用 getContentType()访问
+		4.DOCUMENT_ROOT	与URL http://host/对应的实际目录	用getServletContext().getRealPath("/")
+		5.HTTP_XXX_YYY	此形式是CGI程序访问任意的HTTP请求报头方式，如cookie报头为HTTP_COOKIE servlet使用request.getHeader
+		6.PATH_INFO	  这个变量提供servlet地址之后，查询数据之前，中间的URL路径	servlet使用request.getPathInfo()访问
+		7.PATH_TRANSLATED	给出映射到服务器实际路径信息	servlet使用request.getPathTranslated()访问
+		8.QUERY_STRING	以单个字符串形势给出附加数据	servlet使用request.getQueryString()访问
+		9.REMOTE_ADDR	发出请求的客户机的ip地址	servlet使用request.getRemoteAddr()访问
+	   10.REMOTE_HOST	发出请求的客户机的完全限定域名	servlet使用request.getRemoteHost()访问
+	   11.REMOTE_USER	如果提供Authorization报头，经过服务器自身解码，给出用户相关的部分		servlet使用request.getRemoteUser()访问
+	   12.REMOTE_METHOD post或get,偶尔也可能是head
+	   13.SCRIPT_NAME	给出servlet的路径，相对服务器根目录	servlet使用request.getServletPath()访问
+	   14.SERVER_NAME	给出服务器计算机的主机名	servlet使用request.getServerName()访问
+	   15.SERVER_PORT	存储服务器正在侦听的端口	servlet使用request.getServerPort()访问
+	   16.SERVER_PROTOCOL	标明请求行中的协议名称和版本(HTTP/1.1..) servlet使用request.getProtocol()访问
+	   17.SERVER_SOFTWARE	Web服务器的标识信息	servlet使用request.getServletContext().getServerInfo()访问
