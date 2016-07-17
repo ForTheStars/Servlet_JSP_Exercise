@@ -24,4 +24,14 @@
 		<servlet-name>LotteryNumbers</servlet-name>
 		<url-pattern>/lotteryNum.do</url-pattern>
 	</servlet-mapping>
+	
+<!-- 第四章 -->
+	<servlet>
+		<servlet-name>SpecialCode</servlet-name>
+		<servlet-class>code04.SpecialCode</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpecialCode</servlet-name>
+		<url-pattern>/spe.do</url-pattern>
+	</servlet-mapping>
 </web-app>

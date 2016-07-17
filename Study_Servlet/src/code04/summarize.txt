@@ -1,0 +1,19 @@
+第四章	客户请求的处理：表单数据
+表单数据的作用
+	1.使用form元素创建html表单
+		使用action属性指定对结果进行处理的servlet和jsp页面地址
+	2.使用输入元素收集用户数据
+	3.在接近表单的尾部放置提交按钮
+		按下这个按钮，浏览器会调用表单的action指定的url，
+		对于get请求，url尾部会附加一个问号和多个名/值对，名来自html输入元素的name属性，值来自终端用户
+		对于post请求，是在请求中单独的行发送
+servlet中读取表单数据
+	request.getParameter("xxx") xx为form表单中的name属性，区分大小写
+	request.getParameterNames();   获取form表单参数名   详情见 form.java
+表单Bean
+	getParameter 返回的始终都是字符串类型，若希望返回int，或其他，
+	则需要自己解析，如： Integer.parseInt(request.getParameter("int"))
+	而且此句话需异常处理，NumberFormatException 异常
+	使用javaBean 组件构架可以极大简化读取速度请求参数
+	使用Apache基金会的jakarta 通用包，加入两个jar文件：commons-beanutils-1.8.2.jar  和    commons-logging-1.1.1.jar
+	
