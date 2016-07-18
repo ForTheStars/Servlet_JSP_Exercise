@@ -1,0 +1,26 @@
+第六章	服务器响应的生成：HTTP状态代码
+来自浏览器或者其他客户程序的请求，由一个HTTP命令(get/post)，0或多个请求报头(http1.1需1个及以上 host必须),一个空行以及一些查询数据(post请求)
+		GET /servlet/SomeName HTTP/1.1
+		Host:...
+		Header2:...
+		...
+		// 这里打一个空行
+		//若为POST，数据在这，get省略
+Web服务器对请求的相应，一般由一个状态行，一些响应报头，一个空行和对应的文档构成
+		HTTP/1.1 200 ok
+		Content-Type: text/html
+		Header2:...
+		...
+		//这里打一个空行
+		//html文档代码等
+状态代码的指定
+	设置任意状态代码：response.setStatus(int)
+	设置302状态代码(302命令浏览器链接到新的位置)：response.sendRedirect(String URL)
+	设置404状态代码(用于服务器没有找到文档的情况)：response.sendError(int code,Sring message)
+HTTP 1.1状态代码
+	100-199 都是信息性的，标示客户应该采取的其他动作
+	200-299 表示请求成功
+	300-399 用于那些被移走的文件，常常包括Location报头，指出新的地址
+	400-499 表明客户引发的错误
+	500-599 表示服务器引发的错误
+	设置状态代码尽量使用常量引用的状态码设置，如：response.setStatus(response.SC_NO_CONTENT),而非response.setStatus(204)
