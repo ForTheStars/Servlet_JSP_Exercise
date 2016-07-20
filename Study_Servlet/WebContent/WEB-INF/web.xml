@@ -1,36 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
 <!-- 第一章 -->
-  <servlet>
-    <servlet-name>helloServlet</servlet-name>
-    <servlet-class>code01.HelloServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>helloServlet</servlet-name>
-    <url-pattern>/hello.do</url-pattern>
-  </servlet-mapping>
-  
+	<servlet>
+		<servlet-name>helloServlet</servlet-name>
+		<servlet-class>code01.HelloServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>helloServlet</servlet-name>
+		<url-pattern>/hello.do</url-pattern>
+	</servlet-mapping>
+
 <!-- 第三章 -->
-  <servlet>
-    <servlet-name>LotteryNumbers</servlet-name>
-    <servlet-class>code03.LotteryNumbers</servlet-class>
-    <init-param>
-      <param-name>test</param-name>
-      <param-value>temp</param-value>
-    </init-param>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>LotteryNumbers</servlet-name>
-    <url-pattern>/lotteryNum.do</url-pattern>
-  </servlet-mapping>
-  
+	<servlet>
+		<servlet-name>LotteryNumbers</servlet-name>
+		<servlet-class>code03.LotteryNumbers</servlet-class>
+		<init-param>
+			<param-name>test</param-name>
+			<param-value>temp</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LotteryNumbers</servlet-name>
+		<url-pattern>/lotteryNum.do</url-pattern>
+	</servlet-mapping>
+
 <!-- 第四章 -->
-  <servlet>
-    <servlet-name>SpecialCode</servlet-name>
-    <servlet-class>code04.SpecialCode</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>SpecialCode</servlet-name>
-    <url-pattern>/spe.do</url-pattern>
-  </servlet-mapping>
+	<servlet>
+		<servlet-name>SpecialCode</servlet-name>
+		<servlet-class>code04.SpecialCode</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpecialCode</servlet-name>
+		<url-pattern>/spe.do</url-pattern>
+	</servlet-mapping>
+
+<!-- 第八章 -->
+	<servlet>
+		<servlet-name>CookieTime</servlet-name>
+		<servlet-class>code08.CookieTest</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CookieTime</servlet-name>
+		<url-pattern>/cookieTime.do</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>RepeatVisitor2</servlet-name>
+		<servlet-class>code08.RepeatVisitor2</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RepeatVisitor2</servlet-name>
+		<url-pattern>/visitor2.do</url-pattern>
+	</servlet-mapping>
 </web-app>

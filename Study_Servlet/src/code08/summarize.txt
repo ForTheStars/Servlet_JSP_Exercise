@@ -1,0 +1,44 @@
+第八章	cookie管理
+cookie 是小段的文本信息,Web服务器将它发送给浏览器，之后，在访问同一网站或域时，浏览器又将她原封不动的返回。
+通过让浏览器读取他之前发送给客户程序的信息，站点可以为访问者提供诸多便利
+cookie优点
+	1.在电子商务会话中标识用户		短期跟踪
+	2.记录用户名和密码	让用户自动登入站点
+	3.定制站点	使用cookie记录用户的偏好
+	4.定向广告	记录哪些主题引起特定用户的兴趣,并向他们显示与这些兴趣相关的广告
+向程序发送cookie
+	1.创建Cookie对象		Cookie userCookie = new Cookie("userId","a1234")
+	2.设置最大时效      以秒为单位    userCookie.setMaxAge(60*60*24*7) 此时间设置为一周
+	3.将Cookie 放入到HTTP 响应报头  response.addCookie(userCookie)
+从客户端读取cookie
+	1.request.getCookies 无cookie 返回null，否则返回 Cookie[]
+	2.对数组进行循环,调用每个cookie的getName方法，直到找到需要值在调用getValue
+cookie属性
+	1.public void setComment(String comment)
+	  public void getComment()
+	    这些方法指定或查找与cookie相关的注释(纯粹用于信息目的，存在服务器，并不发送客户程序)
+	2.public void setDomain(String domainPattern)
+	  public void getDomain()
+	    设置或读取cookie适用的域.一般浏览器只将cookie返回给主机名与发送该cookie的主机名一致的主机，当想改变时
+	    如bali.vacation.com发送来的cookie返回给queensland.vacation.com，他们的二级域名相同，三级不同。直接在queensland网站上是获取不到cookie的
+	    设置域：setDomain(".vacation.com") 这样就可以访问到了，域必须以.号开始
+	    说明：cookie作用域为父级域名时，所有子级域名都可以得到该cookie(顶级域名设置是无效的,如直接.com,.net,浏览器不存储)，还有 cookie不能跨二级域名设置(二级域名不同时无效)
+	3.public void setMaxAge(int lifetime)
+	  public void getMaxAge()
+	    规定cookie多长时间过期。负值(默认值)仅仅用于当前会话(浏览器关闭前)，0值表示浏览器删除该cookie
+	4.public void getName() 
+	    获取cookie名称
+	5.public void setPath(String path)
+	  public void getPath()
+	    设置或获取cookie所适用的路径，如果没有指定一个路径，浏览器只将该cookie返回给发送cookie的页面的目录中或以下的URL
+	    正常的cookie只能在一个应用中共享，即一个cookie只能由创建它的应用获得。可在同一应用服务器内共享方法：设置cookie.setPath("/");
+	6.public void setSecure(boolean secureFlag)
+	  public boolean getSecure()
+	    表示cookie是否只能通过加密连接(即 SSL),默认 false,即cookie适用于所有连接
+	7.public void setValue(String cookieValue)
+	  public void getValue()  
+	  set方法指定与该cookie相关联的值,get找出该值
+	8.public void setVersion(int version)
+	  public void getVersion()  
+	  设置和取得cookie遵循的cookie协议版本。版本0，默认值
+	  
