@@ -1,0 +1,41 @@
+第七章	服务器响应的生成：HTTP响应报头
+HTTP响应报头的设置，经常与状态行中状态代码设置结合起来
+	所有“文档发生移动”的状态码(300~307)都会伴随一个Location报头
+	401代码经常包括伴随的 WWW-Authenticate报头
+servlet设置响应报头
+	setHeader(String headerName,String headerValue)	将指定名称的响应报头设为给定的值
+	设置含有日期和整数的报头
+		setDateHeader(String headerName,long milliseconds)
+		setIntHeader(String headerName,int headerValue)
+HTTP允许相同的报头名多次出现，使用set方法会替换同名报头，可使用add方法，如：addHeader(),addDateHeader(),addIntHeader()
+HttpServletResponse 还提供了许多方便的方法来指定常用的报头
+	setContentType(String mimeType)   设置Content-Type 报头
+	setContentLength(int length)	设置Content-Length 报头
+	addCookie(Cookie c)		插入一个cookie,由于响应中一般会拥有多个报头，故无setCookie()方法
+	sendReadirect(String address)
+HTTP 1.1响应报头
+	1.Allow		指定服务器支持的请求方法(GET,POST等)
+	2.Cache-Control		告诉浏览器，什么环境可以安全的缓存档
+		public	文档可以正常缓存
+		private 文档只适用于单个用户，只能存储在私有存缓中
+		no-cache 文档不能被缓存
+		no-store 不要缓存文档，甚至不应该将它存储在磁盘上的临时目录
+		must-revalidate：每次使用文档时，客户程序都必须联系原来的服务器（而非仅仅中间代理），重新验证文档。
+		proxy-revalidate：除了指适用于共享缓存以外，这个报头和must-revalidate相同。
+		max-age=xxx：xxx秒之后应该将文档认作失效。这是Expires报头的方便代替，但只适用于HTTP1.1客户程序。如果max-age和Expires在响应中同时存在，那么max-age优先
+		s-max-age=xxx：共享缓存应该在xxx秒之后将该文档认作失效。
+	3.Connection	客户端省略此报头，默认浏览器持续性连接，由于持续性连接需要Content-Length 响应报头
+	4.Content-Disposition	要求浏览器询问用户，将响应存储在各定名称的文件中
+		用法如下：Content-Disposition:attachment;filename=some-file-name
+	5.Content-Encoding 	这个报头标明页面在传输的过程中所使用的编码方式
+	6.Content-Language  表示文档所使用的语言
+	7.Content-Length  标明响应中的字节数，仅当浏览器持续连接时才需使用
+	8.Content-Type  给出响应文档的MIME类型，HttpServletResponse有专门的方法setContentType。
+	9.Expires  规定内容的过期时间，从而不再继续缓存
+   10.Last-Modified	标明文件的最后修改时间
+   11.Location  状态码在300~399之间的所有响应都包括这个报头，他通知浏览器文档地址
+   12.Pragma   提供这个报头且值设置为no-cache，指示HTTP1.0客户不要缓存此文档。HTTP1.1中，Cache-Control：no-cache是更为可靠的替代方法。
+   13.Refresh  标明浏览器应该多长时间之后请求新的页面
+   14.Retry-After  可以和503响应结合使用，告诉客户程序多久之后可以重复它的请求
+   15.Set-Cookie   指定一个与页面相关联的cookie
+   16.WWW-Authenticate  总是和401状态代码一起使用。它告诉浏览器，客户应该在Authorization报头中提供哪种验证类型（BASIC或DIGEST）和域。
