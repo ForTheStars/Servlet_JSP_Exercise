@@ -41,4 +41,22 @@ cookie属性
 	8.public void setVersion(int version)
 	  public void getVersion()  
 	  设置和取得cookie遵循的cookie协议版本。版本0，默认值
-	  
+
+会话：用户开一个浏览器，访问一个网站，只要不关闭该浏览器，不管该用户点击多少个超链接，访问多少资源，直到用户关闭浏览器，整个这个过程我们称为一次会话。
+为什么要使用cookie
+	1.记录用户的事件
+	2.浏览历史记录
+	3.用户名和密码的记录	  
+cookie：
+	1.cookie是在服务端创建的
+	2.cookie是保存在浏览器这端的
+	3.cookie的生命周期可以通过cookie.setMaxAge（）；如果不设置，关闭浏览器就destroy了
+	4.cookie可以被多个浏览器共享
+	5.怎么理解：把cookie假设成一张表  名字（String）：值（String）所有共享这张表，名字如果重复了就会替换掉存在的cookie值。
+	6.一个WEB应用可以保存多个cookie
+	7.cookie存放的时候是以明文方式存放的，因此安全比较低，我们可以通过加密后保存，可以用md5（不可逆）算法加密（想起了base64），经过md5加密后存放到数据库，用户输入密码后加密然后再和数据库里面的匹配。
+cookie的细节：
+	1，,一个web应用可以给浏览器发送多个cookie，一个浏览器可以存储多个web应用提供的cookie。一般只允许存放300个cookie，每个web应用最多放 20个，每个cookie大小4KB，因此不会塞满硬盘，也不会被用作“拒绝服务”攻击手段。
+	2，cookie的默认生命周期是会话级别的，关闭浏览器后就被删除，可以通过setMaxAge（）设置cookie 的生命周期。setMaxAge（0）删除该cookie：要保持path一致，否则无法删除，
+		setMaxAge（负数），则该cookie是会话级别的。
+		如果该cookie只有一个值，则删除cookie后文件会被删除，否则文件不会被删除。
