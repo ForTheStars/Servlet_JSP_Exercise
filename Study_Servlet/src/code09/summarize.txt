@@ -1,0 +1,47 @@
+第九章	会话跟踪
+介绍servlet会话跟踪API，它可以在访问者浏览网站时跟踪具体用户的数据
+会话跟踪三种典型解决方案
+	1.cookie	使用cookie存储会话的ID 通过表ID -> 用户 -> 用户具体信息
+	2.URL重写	将id=xxx (此id值为会话id )的标识信息存在连接尾部
+	3.隐藏的表单域	<input type="hidden" name="sesson" type="xxx"/>
+servlet提供解决方案
+	HttpSession API		这个高层接口构筑在cookie或URL重写之上
+会话跟踪基础
+	1.访问与当前请求相关联的会话对象
+		request.getSession获取HttpSession对象,该对象是一个简单的散列表,用于存储用户的相关联数据
+	2.查找与会话相关联的信息
+		HttpSession对象.getAttribute(String name),返回类型为Object,所以需转换恰当类型,无结果返回null
+	3.存储会话中的信息
+		HttpSession对象.setAttribute(String name,Object value) 设置需要存储的值以及相应的键
+	4.废弃会话数据
+		HttpSession对象.removeAttribute(String name)  废弃指定会话   invalidate() 废弃所有会话
+会话跟踪API
+	1.public Object getAttribute(String name)
+		从会话中提取出之前存储的值,若无这返回null
+	2.public Enumeration getAttributeNames()
+		返回会话中所有属性的名称
+	3.public void setAttribute(String name,Object value)
+		将值和名称关联起来，若调用对象实现了HttpSessionBindingListener接口,在他存储到会话之后其valueBound方法会被调用
+	4.public void removeAttribute(String name)
+		移除与指定名称的任何值，若其值实现了HttpSessionBindingListener接口,他的valueUnbound方法会被调用
+	5.public void invalidate()
+		将会话作废,并将释放所有与之关联的对象,注意：会话是与用户(即客户程序)相关联的
+	6.public void logout()	这个方法文档中未找到
+		将客户从Web服务器中注销
+	7.public String getId()
+		这个方法返回每个对话所对应的唯一标识符
+	8.public boolean isNew()
+		如果会话尚未和客户程序(浏览器)发生任何联系,则这个方法返回true。尽量避免使用，注:返回false只能说明他们之前曾经访问过该Web应用,并不代表他们曾经访问过servlet或jsp页面
+	9.public long getCreationTime()
+		返回会话首次构建的时间
+	10.public long getLastAccessedTime()
+		返回会话最后被客户程序访问的时间
+	11.public int getMaxInactiveInterval()
+	   public void setMaxInactiveInterval(int interval)
+	   	设置或读取在没有访问的情况下,会话会被自动废弃之前应该保持多长时间,以秒为单位
+		
+几篇参考博客
+	http://www.cnblogs.com/alexlo/archive/2013/03/26/2983490.html
+	http://www.cnblogs.com/bersaty/p/3220545.html
+	http://wkf41068.iteye.com/blog/1826961			
+	
