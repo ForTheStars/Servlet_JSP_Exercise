@@ -1,0 +1,38 @@
+第十一章		用JSP脚本元素调用Java代码
+预定义变量
+	一些重要对象
+		1.request 对象	HttpServletRequest
+		2.response对象	HttpServletResponse
+		3.session对象	HttpSession
+		4.out对象		用于将输出到客户端的Writer
+		5.application对象	ServletContext	这是一个由Web应用中所有servlet和jsp页面共享的数据结构
+JSP表达式用来将值直接插入到输出中
+	<%= Java Expression%>
+后台的运作scriptlet
+	JSP表达式基本上成为由JSP页面生成的servlet中的print(或 write)语句
+	常规的HTML转换成print语句,同时将双引号将文本引起来，而
+	JSP表达式转换为没有双引号的print语句.
+	这些print语句放在一个新的_jspServlet方法中,无论GET还是POST都会，servlet都会调用此方法(不同提供商生成的代码也稍有不同)	
+	脚本程序段
+	形式  <% Java Code %>
+	scriptlet 可以访问到表达式能够访问到所有自动变量(request,response,session,out等)
+	我们不必一定在JSP的最顶端设置响应报头或状态代码(JSP生成的servlet使用writer的一种特殊变体(JspWriter类型),他会对文档做部分缓冲,这种缓冲行为可能会改变)
+	scriptlet 代码只是直接插入到_jspServlet方法中，不需要字符串,不用print语句,不做任何修改
+使用声明
+	形式 <%! Fied or Method Definition %>
+	由于声明并不产生输出,所以一般与JSP或scriptlet一起使用。基本上JSP声明可以包含字段定义,方法定义,内部类定义,甚至静态初始块，任何可以放在类定义中但在已有方法之外的内容
+	在实践中,声明几乎包含字段或者方法定义
+	对于初始化和清理工作，可以覆盖使用_jspInit 和 _jspDestroy(见scriptlet_jsp.java)，标准的 init 和 destroy 会调用这两个方法
+	JSP的声明生成放在在servlet类定义之内,_jspService方法之外的代码(见 statement_jsp.java)
+使用预定义变量
+	为了有效使用JSP表达式和scriptlet ，需要知道自动生成的servlet使用哪些变量。
+	_jspService方法内自动定义了8个局部变量,注意：局部变量(如JSP声明代码就不能使用,在此方法外)
+		1.Request	与请求相关联的HttpRequestServlet
+		2.Response	与发送客户端相关联的HttpServletResponse
+		3.Out		用来将输出发送给客户程序的Writer	为了在JSP页面各个地方都可以设置响应报头,此处的out不是标准的PrintWriter，它对输出的内容进行缓冲(JspWriter类型)
+		4.Session	用于请求相关联的HttpSession对象	JSP中会话是自动创建的,因此即使不存在对输入会话的引用,也存在这个变量
+		5.Application   这个变量与 getServletContext() 返回类型相同，都为ServletContext，可将数据存入此中(setAttribute)，由Web应用中所有的servlet 和 jsp 共享
+		6.Config	这个变量是该页的 ServletConfig对象,原则上可用来读取初始化参数(_jspInit中)
+		7.pageContext	servlet无对应对象	通过它可以访问页面的许多属性
+		8.Page		这个变量不过是 this 的同义词,无多大用处
+JSP表达式   JSP声明 和 	scriptlet 不同之处	见compare.jsp
