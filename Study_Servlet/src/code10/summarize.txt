@@ -1,0 +1,18 @@
+第十章	JSP技术概述
+应用 JavaServer Page(JSP) 技术可以将常规的,静态的HTML与动态生成的内容混在一起。我们只需使用自己熟悉的Web界面构建页面，以正常的方式编写常规HTML
+之后,将页面生成的代码包含在特殊的标签中,这些标签大多数情况<% %> 形式
+我们可以将servlet看成含有HTML的java代码,可以将JSP看成含有java的HTML代码
+JSP页面最终要转换成servlet,并进行编译,在请求期间执行的是编译过的servlet,因此,编写servlet只是另一种编写servlet的方式
+与纯servlet相比较
+	1.JSP页面会转换成servlet.不了解servlet就无法知道JSP如何工作的
+	2.JSP由静态HTML，专用的JSP标签,和java代码组成(servlet代码)
+	3.JSP擅长生成由大量组织有序的结构化HTML或其他字符数据组成的页面。servlet 擅长生成二进制数据
+转换时期和请求时期
+JSP页面仅在修改后第一次被访问时,才会被转换成servlet并进行编译
+载入到内存中,初始化和执行遵循servlet的一般规则
+HTML注释		<-- Blah -->
+JSP注释		<%-- Blan --%>
+JSP表达式	<%= Blan %>
+JSP申明		<%! Field Definition  %>
+JSP指令		<%@ directive att="val" %>
+JSP表达式语言的元素	${ EL Expression }
