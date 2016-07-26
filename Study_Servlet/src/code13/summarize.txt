@@ -1,0 +1,61 @@
+第十三章		在JSP页面中包含文件和applet
+在JSP中,主要有3种功能可以将外部内容包含到JSP中
+	1.jsp:include动作
+	2.include指令
+	3.jsp:plugin动作
+jsp:include	<jsp:include page="url" />
+	服务器按照正常的方式对指定被包含资源的URL(servlet或jsp页面)进行解释,服务器以通常的方式运行被包含的页面,
+	将产生的输出放入主页面中,这种行为和RequestDispatcher类的include方法完全相同。
+	page属性		指定包含的页面	<jsp:include page="/url" />
+		相对URL不以斜杠开头,则将解释为相对于主页面的位置。以斜杠开头的相对URL被解释为相对于Web应用的根目录
+			/开头,任何时候,如果是服务器来处理他们,那么都按相对于当前的Web应用进行解释;只有客户(浏览器)处理他们的时候,才会按相对于服务器的根目录来解释
+	flush属性(可选)	指定在将页面包含进来之前是否应该清空主页面的输出流(默认为 false)
+		<jsp:include page="url" flush="true" />
+	jsp:param 元素：增加请求元素
+		被包含页面与最初请求的页面使用相同的请求对象.因此,被包含页面看到的请求参数一般与主页相同,若希望增加或替换这些元素,可以使用jsp:param
+		<jsp:include page="/assistant.jsp">
+			<jsp:param name="bgColor" value="yellow"/>
+		</jsp:include>
+		当URL请求：http://localhost:8080/study/code13/main.jsp?fgColor="red"
+			主页面(main.jsp)：
+				request.getParameter("fgColor")  red
+				request.getParameter("bgColor")	 null
+			包含页面(assistant.jsp)：
+				request.getParameter("fgColor")  red
+				request.getParameter("bgColor")  yellow
+			说明jsp:param指定的值仅在被包含的文件中优先采用
+
+include 指令	<%@ include file="url" %>
+	可以将include指令看作是一种预处理器：服务器将包含文件的内容逐字节插入到主页面中,然后将产生的页面作为单个JSP页面进行处理
+	使用include指令的页面要比jsp:include的页面难维护的多	仅当jsp:include不能满足时,我们才使用include指令
+		仅在所包含的文件中定义了主页面要用的字段或方法,或者所包含的文件设置了主页面的响应报头,才使用include指令
+	使用include，并且更改了被包含的文件,都必须更新主页面修改的时间
+	xml语法
+		<jsp:directive.include file="url" />
+jsp:forward
+	除了可以使用jsp:include组合主页和辅页的输出之外,我们还可以使用jsp:forward获取辅助页面的完整输出(跳转)
+	避免使用，尽量在servlet中使用	RequestDispatcher.forward
+包含使用java插件的applet
+	jsp:plugin不向浏览器添加任何java能力,它只是简化了笨重的OBJECT 和 EMBED 标签的创建工作,java2插件需要这两个标签
+	<jsp:plugin type="applet" code="SomeApplet.class" width="300" height="300"> 
+	</jsp:plugin>
+jsp:plugin元素
+	该元素用于在浏览器中播放或显示一个对象（典型的就是applet和Bean),而这种显示需要在浏览器的java插件。
+	一些属性
+		type	对于applet,其值为applet.java插件还允许我们在Web嵌入javaBean,其值为bean
+		code	将会被Java插件执行的Java Class的名字，必须以.class结尾。这个文件必须存在于codebase属性指定的目录中.
+		width	Applet或Bean将要显示的宽度的值，此值为数字，单位为像素.
+		height	Applet或Bean将要显示的高度的值，此值为数字，单位为像素.
+		...
+	jsp:params 和 jsp:param	你需要向applet或Bean传送的参数或参数值。
+		<jsp:params>
+  			<jsp:param name="param1" value="value1" />
+  			<jsp:param name="param2" value="value2" />
+		</jsp:params>
+	jsp:fallback	一段文字用于Java插件不能启动时显示给用户的
+		<jsp:fallback>
+  			<p>Unable to load applet</p>
+		</jsp:fallback>
+		
+参考博客
+	http://blog.sina.com.cn/s/blog_53c96bd00100082t.html		
