@@ -1,0 +1,52 @@
+第十二章		控制所生成的servlet的结构：JSP page指令
+指令元素语法：
+	<%@ directive attr1="value" attr2="value" %>
+	<和% 以及和@，%和>之间不能有任何的空格。属性值两边的双引号可以替换为单引号。在属性中使用引号使用\进行转义。
+JSP 3种类型的指令
+	1.page	page指令允许我们通过类的导入,servlet超类的定制,内容类型的设置,以及诸如此类事物来控制servlet结构,page指令可以放在文档任何位置
+	2.include	允许我们在JSP文件转换到servlet时,将一个文件插入到JSP页面.include应该放置到文档希望插入文件的地方
+	3.taglib	自定义的标记标签
+page指令可以定义下面这些大小写敏感的属性(按使用频率列出)
+	import,contentType,pageEncoding,session,isELlgnored(只限JSP2.0),buffer,autoFlush,info,errorPage,isErrorPage,isThreadSafe,language,extends
+import属性	<%@ page attr1="value1" attr2="value2" ... %>
+	page属性中唯一允许在同一文档中出现多次的属性，属性的值可以以逗号隔开。
+	import 指定jsp页面转换成servlet应该输入的包，对于没有明确指定包的类，将根据jsp页面所在的包(生成的servlet的目录)决定类的包。注：不要依赖于自动导入
+contentType和pageEncoding
+	<%@page contentType="text/html; charset=UTF-8"%>	<% response.setContentType("text/html;charset=UTF-8"); %>
+	上述两者达到了相同的效果,只不过后者明确使用了java代码(避免)，前者使用JSP语法。指令被特殊处理，不是在出现的位置直接成为_jspServlet代码
+	contentType属性设置发送到客户端文档的响应报头的MIME类型和字符编码。多个使用;号分开。
+	pageEncodeing属性只用于更改字符编码。
+session
+	控制页面是否参与会话，默认true。
+	如果存在已有会话，则预定义session变量，绑定到已有会话中。否则创建新会话将其绑定到session。
+	设置为false并不是禁用会话跟踪，它只是阻止jsp页面为不拥有会话的用户创建新会话。
+isELlgnored(JSP2.0 中新引入的特性)
+	定义在jsp页面中是否执行或忽略EL表达式。true表示忽略，false表示执行。	
+buffer 和 autoFlush	
+	buffer属性指定out对象(JspWriter)使用的缓冲区大小，以kb为单位，默认8kb。none表示不使用缓冲区。
+	这样要求设置报头或状态代码的jsp元素要出现在文件的顶部，任何HTML内容之前。
+	autoFlush属性控制当缓冲区满了后，是自动清空输出缓冲区(默认true)，还是在缓冲区溢出后抛出异常(false)。
+	在buffer=none的时候，autoFlush=false是错误的。
+info
+	定义一个可以在servlet中通过getServletInfo方法获取的字符串。
+	jsp容器做的是在servlet中生成getServletInfo方法返回info属性指定的String。
+
+errorPage 和 isErrorPage
+	errorPage属性用来指定一个jsp页面(客户端跳转，所以将错误页面放入WEB-INF,客户不能直接请求)，由该页面来处理当前页面中抛出但没有捕获的任何异常。指定的页面可以通过exception变量访问异常信息。
+	isErrorPage属性表示当前页是否可以作为其他jsp页面的错误页面。true或false。	
+isThreadSafe
+	控制由jsp页面生成的servlet是否允许并发访问(默认true允许)。这种阻止并发访问的实现是基于SingleThreadModel接口。所以，避免使用isThreadSafe属性。使用 synchronized 替代同步
+extends
+	指定JSP页面生成的servlet的超类。
+	避免使用。这是服务器提供商该做的事情。为开发人员或提供商保留,一般人避免使用该属性,除非引用由服务器专为这目的提供的类
+language
+	用于指定在脚本元素中使用的脚本语言，默认java。在jsp2.0规范中，只能是java。
+
+指令的XML指令
+	<jsp:directive.directiveType attr="value1" attr="value2" ... />
+如： <jsp:directive.page import="java.util.*" />   相当于   <%@page import="java.util.*" %>
+
+参考博客
+	http://blogzhoubo.iteye.com/blog/1772096
+	http://blog.csdn.net/qiqiongran_luck/article/details/6945170
+	http://mmdev.iteye.com/blog/1300599
