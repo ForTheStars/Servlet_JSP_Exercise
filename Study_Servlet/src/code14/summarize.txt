@@ -1,0 +1,54 @@
+第十四章		JavaBean组件在JSP文档中的应用
+bean是什么
+	bean类必须拥有一个零参数的(默认)构造函数,jsp会调用默认构造函数(与servlet打交道则不需要,jsp只需从中查询数据)
+	bean类不应该有公开的实例变量(字段)
+	持续性的值应该通过getXxx 和 setXxx 方法来访问(这种情况我们称该类拥有一个名为xxx的属性)
+		布尔类型(字段为isXxx)使用   isXxx和setXxx
+jsp:useBean	构建一个新的bean
+	<jsp:useBean id="beanName" class="package.Bean" />
+	表示实例化由class指定的类(跟上包名),并将实例化后的对象绑定到_jspServlet方法中的变量,变量的名称由 id 指定
+	类似：<% Bean beanName = new Bean(); %>
+	scope属性	指定scope属性将bean与其他页面关联(共享bean,bean的存活范围)
+		jsp:useBean动作规定,仅当不存在相同id和scope时的bean才实例化新的对象
+	beanName属性
+		与class属性不同的是,beanName既可以指向类,也可以指向含有序列化的bean对象的文件
+	type属性		声明变量的类型是实际bean的超类
+		<jsp:useBean id="beanName" class="package.Bean" type="package.SuperBean" />
+		类似于	<% SuperBean beanName = new Bean(); %>
+		
+jsp:getProperty	读取或输出 bean的属性的值	getXxx()
+	<jsp:getProperty name="beanName" property="propertyName" />
+	类似于	<%= beanName.getPropertyName() %>
+	
+jsp:setProperty	修改bean的属性	setXxx()
+	<jsp:setProperty name="beanName" property="propertyName" value="propertyValue" />
+	类似于	<%= beanName.setPropertyName("propertyValue") %>
+设置bean的属性
+	jsp允许将属性与请求参数关联,自动执行从字符串到数字,字符,和布尔类型的转换
+		<jsp:setProperty name="beanName" property="propertyName" param="propertyName" />
+	如果请求中没有指定参数,则不采取行动(系统并不传递null到相关联的属性)
+	如果请求参数的名称和bean属性名称相同,这可省略param（建议全列）
+		<jsp:setProperty name="beanName" property="propertyName" />
+		更简便一种：<jsp:setProperty name="beanName" property="*" />
+	注意以下三点：
+		输入参数缺失时不采取行动
+		自动类型转换并不能像手动类型那样防止不合法的值(使用 try/catch 考虑错误页面处理)
+		bean属性的名称和请求参数大小写敏感
+共享bean
+	对于jsp:useBean创建的对象,我们都将它们看做_jspServlet方法中的局变量来处理.虽然bean的确绑定到局部变量,但这并非是唯一行为
+	它们还存在4个不同位置(根据 scope属性决定)
+		page
+			默认值,该作用域表示：在处理当前请求期间,除了要将bean绑定到局部变量外,还应放在PageContext中(使用 getAttribute读取)
+			由于每个网页和每个请求都有各自的PageContext对象,所以此值表示不共享,也就是针对每个请求创建的bean
+		request
+			除了要将bean绑定到局部变量外,还应放在HttpServletRequest中(使用 getAttribute读取)
+			对于forward跳转的页面(服务器端跳转)和include包含的文件共享bean
+		session
+			还应将它存储到与当前请求相关的HttpSession中的对象(使用 getAttribute读取)
+			它存在于整个session的生命周期内
+		application
+			还应将它存储到与当前请求相关的ServletContext中的对象(使用 getAttribute读取)		
+			它存在于整个web应用的生命周期内,web应用中的所有jsp文件都能共享同一个javabean对象。
+		不要为存储在不同位置的bean使用相同的bean名字,针对每个bean，jsp:useBean中的id都应该使用唯一的值
+参考博客：
+	http://www.cnblogs.com/zfc2201/archive/2011/08/17/2143615.html
