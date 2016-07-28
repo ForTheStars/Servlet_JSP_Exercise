@@ -1,0 +1,38 @@
+第十五章		servlet和JSP的集成：模型-视图-控制器架构
+MVC框架
+	最初的请求由servlet来处理,servlet调用商业逻辑和数据处理代码并创建bean来表示相应结果(即模型),然后servlet确定哪个JSP页面适合表达于表达这些特定的结果,并将请求转发到相应的页面(JSP页面即为视图)由servlet确定哪个商业逻辑适用,应该用哪个JSP表达结果(Servlet就是控制器)
+	将商业逻辑层和数据访问层从表示层分离开出来
+	步骤
+		1.定义bean来表示数据
+			bean是遵循几项简单约定的Java对象,由于是servlet或其他java例程下创建bean，所以也就不必要一定是空构造方法了
+		2.使用servlet处理请求
+			读取请求参数(一般为表单数据)和请求报头并生成数据，为下一步填写做准备
+		3.填写 bean
+			调用某种商业代码,调用JavaBean组件或是查询数据库,将这些数据来填写对象bean
+		4.将bean存储到请求,会话,或servlet的上下文中	
+			servlet可以在3个位置存储JSP页面所需的数据,分别是：HttpServletRequest(jsp对应request),HttpSession(jsp对应session),ServletContext(jsp对应application)
+				ValueObject obj = new ValueObject()
+				以HttpServletRequest为例
+					request.setAttribute("key",obj)
+					JSP页面检索数据：<jsp:useBean id="key" type="page.Bean" scope="request">
+				以HttpSession为例
+					HttpSession session = request.getSession()
+					session.setAttribute("key",obj)
+					JSP页面检索数据：<jsp:useBean id="key" type="page.Bean" scope="session">
+				以ServletContext为例
+					ServletContext context = this.getServletContext()
+					context.setAttribute("key",obj)
+					JSP页面检索数据：<jsp:useBean id="key" type="page.Bean" scope="application">
+		5.将请求转发到JSP页面
+			服务器端调转(可访问WEB-INF)	不产生任何网络数据流量		用户不会看到目的地地址(浏览器地址不变)
+				RequestDispatcher dispatcher = request.getRequestDispater("跳转地址")
+				dispatcher.forward(request,response)
+			客户端跳转	需要另外的网络往返	客户可看到目的地址,可独立访问
+				response.sendRedirect("跳转地址")
+		6.从bean中提取数据
+			使用 jsp:useBean 和 jsp:getProperty 提取数据
+			JSP页面从不创建对象(使用 type属性代替class属性)
+				假如使用class，它是先判断拿不拿得到实例的bean，若拿不到就使用new关键字实例化一个，
+				而使用的是type时，它只是查找指定的范围中是否存在，在不存在时又没使用class或beanName 指定type，就会抛出异常，因此在使用type时就需要注意这点。并且class与beanName 必须指定package (即使引入了包)，而type可以不指定
+			JSP不应该修改页面
+				不应该用到 jsp:setProperty
