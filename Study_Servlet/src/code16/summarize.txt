@@ -1,0 +1,80 @@
+第十六章		简化对Java代码的访问：JSP2.0表达式语言
+为了计算和输出存储在标准位置的Java对象的值,Jsp2.0引入了一种简捷的语言-表达式语言(EL)
+语法结构
+     ${expression}
+语言表达式的调用
+	EL元素可以出现在常规文本和JSP标签属性中,我们还可以使用多个表达式(有可能与静态文本混合在一起),结果会被强行拼接成字符串
+		<jsp:include page="${expr1}blan${expr2}"  
+	转义特殊字符
+		若想${ 出现在页面中,这需要使用 \${   
+阻止表达式语言的求值
+	在jsp1.2以及更早的版本中${没有特殊的含义。当此页面在支持jsp2.0的服务器中，则需停用EL
+	停用个别页面的表达式语言	<%@ page isELEnabled="false" %>
+访问作用域变量
+	servlet需要使用setAttribute将数据存储在某个标准位置：HttpServletRequest，HttpSession，ServletContext
+	也可将作用域变量存储在PageContext对象中,由于servlet和JSP页面不共享PageContext对象(作用域仅限于页面),不适合servlet存储的对象
+	${name}		查找顺序：PageContext->HttpServletRequest->HttpSession->ServletContext
+	<%= pageContext.findAttribute("name") %>   与上述表达式等同,代码过于冗长，jsp:useBean 最为冗长，而且需要知道servlet使用哪个作用域
+	属性名的选取
+		尽量避免在变量名中出现小数点,空格,短划线等
+访问bean属性
+		点号记法
+			${customer.firstName}
+		     类似：<%= customer.getFirstName() %>  <jsp:getProperty name="customer" property="firstName">
+		数组记法		当属性名称中包含一些特殊字符或需动态取值时使用
+			${customer["firstName"]}
+引用隐式对象
+	pageContext
+		pageContext对象引用当前页面的PageContext
+		PageContext依次拥有request,response,session,out,servletContext属性(即 getRequest,getResponse,getSession,getOut,getServletContext方法)
+	param 和 paramValue
+		访问基本的请求参数(param)或请求参数值的数组(paramValues)
+		${param.id} 若请求参数不存在id，则返回空字符串
+	header 和 headerValue
+		访问HTTP请求报头的主要值以及全部值，若使用点号记法其点号后面的值需为合法名称
+		访问Accept报头     ${header.Accept}	  或	${header["Accept"]}
+		访问Accept-Encoding	必须使用 ${header["Accept-Encoding"]}
+	cookie
+		${cookie.name.value} 获得 cookie的值
+		如获取userCookie的value值	${cookie.userCookie.value}  返回带有特定名称(userCookie)的第一个 cookie 值
+	initParam
+		访问上下文初始化参数
+		输出初始化参数defaultColor的值     ${initParam.defaltColor}
+	pageScope,requestScope,sessionScope,applicationScope
+		这些对象运行我们限定系统应该到什么地方查找作用域变量
+		${name}		查找顺序：pageScope->requestScope->sessionScope->applicationScope
+		${request.name}  只会在 HttpServletRequest 中查找
+表达式语言中运算符的应用
+	应该将表达式语言的运算符用在面向表示逻辑(如何表达数据)的简单任务中,要避免在商业逻辑(创建并处理数据)中使用这些运算符
+	算术运算符
+		+ 和 -
+			如果任一操作数为字符串，那么运行时会自动解析为数值(系统不会捕获NumberFormatException)
+			如果任一操作数为BigInteger或BigDecimal类型，系统会自动调用其 add 和 subtract方法
+		*,/和div
+			与+-一样，类型会自动转换.第二 常规的算术运算符优先级依旧适用
+			${1 + 2 * 3}  结果为 7
+		%和mod
+			取模，余数
+	关系运算符
+		== 和 eq
+			检查参数是否不同(类似java equal)
+			两个操作数为同一对象,返回true.若为数值,则用java == 比较，若任一操作符为null,则返回false,若任一操作数为BigInteger或BigDecimal类型,则用compartTo比较,其他则使用equals比较
+			上述比较适用下述关系运算符,不在强调
+		!= 和 ne
+			检查参数是否不同
+		<和lt,>和gt,<=和le,>=和ge
+			与上述不同为 若参数为字符串,则进行字面比较
+	逻辑运算符
+		&&,and,||,or,!和not
+		他们将参数强制转换为Boolean
+	空运算符
+		empty
+			若运算符参数为 null,空字符串,空数组,空Map或空集合 则返回true，否则返回false
+表达式的条件求值
+	jsp2.0自身并不提供条件求值功能,由JSP标准标签库(JSTL)c:if 和 c:choose标签或其他定制标签库提供		
+	表达式语言支持基本的 ?: 运算符   
+	${test ? expression1 : expression2}	若test的求值结果为true 返回 expression1的值,否则返回expression2值
+表达式语言的目标只是简化表示逻辑,避免将这项技术用在商业逻辑中
+
+参考博客
+	http://blog.csdn.net/zdwzzu2006/article/details/4672383
