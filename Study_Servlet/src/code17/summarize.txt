@@ -1,0 +1,90 @@
+第十七章		数据库访问：JDBC(Java DataBase Connectivity)
+JDBC提供一套访问关系型数据库的标准库。通过 JDBC API,我们可以使用完全相同的Java语法访问大量各种各样的SQL数据库。
+JDBC api标准化了数据库的连接方式发送查询和提交事务的语法，以及表示结果的数据结构,但JDBC并不试图将SQL的语法也标准化
+JDBC应用的概述
+	1.载入JDBC驱动程序
+		根据各数据库厂商，下载各自JDBC驱动文件及驱动的文档说明，驱动文件通是一个jar文件
+		将JDBC驱动的Jar文件复制到项目的WEB-INF/lib/下即可
+		MySQL注册驱动: Class.forName("com.mysql.jdbc.Driver");  
+	2.定义连接URL
+		载入驱动程序后，我们必须指定数据库服务器的位置
+		指向数据库的URL所使用的协议是jdbc:协议,并且嵌入服务器的主机名，端口，和数据库名(或引用)
+		MySQL URL = "jdbc:mysql://localhost:3306/数据库名"
+	3.建立连接
+		将该URL，数据库用户名，数据库密码传递给DriverManager.getConnection方法(会抛出SQLException异常)
+		Connection类还包括其他一些方法
+			prepareStatement	创建预编译查询,提交给数据库
+			prepareCall			访问数据库中的存储过程
+			rollback/commit		控制事务管理
+			close				终止打开的连接
+			isClosed			确定连接是否超时或被显式关闭
+	4.创建Statement对象
+		Statement对象用来向数据库发送查询和命令
+		Statement statement = connection.createStatement();
+	5.执行查询或更新
+		有了Statement对象之后，使用它的executeQuery方法发送SQL查询,返回 ResultSet类型的对象
+		ResultSet resulet = statement.executeQuery("SQL语句")
+		Statement常用方法
+			executeQuery	执行SQL查询并在Resulet中返回数据  ResuletSet 可能为空,但不会为null
+			executeUpdate	用于 update,insert,delete 命令，返回受影响的行数
+			executeBatch	将一组命令作为一个单元执行,返回一个数组,其中存储每个命令的更新计数
+			setQueryTimeout	指定SQLException异常之前,等待处理的时间
+			getMaxRows/setMaxRows	确定ResuletSet可能容纳的最大行数。超过的行数将不会给出任何警告的情况下丢弃.默认值为0，表示没有限制
+	6.结果处理
+		使用 ResultSet 的next方法在表中移动,每次移动一行，在一行内,ResuletSet提供各种各样的 getXxx方法,他们以列名或列索引为参数
+		如果值为String类型则调用getString，整数则使用getInt类型.结果行中的第一列索引为 1,而非0
+		访问ResuletSet中的数据时尽量使用列名访问,而非列索引(结构发生变化时，代码则出错)
+	7.关闭连接
+		connection.close()	关闭连接还会关闭对应的 Statement 和 ResultSet对象
+使用预备语句
+		首先按照标准的格式创建参数化语句,在实际使用之前先发送到数据库进行编译。
+		用问号表示语句中应该为具体值所替换的位置,每次使用预备语句时,只需使用相应的setXxx调用(以1为基的索引,以及参数索引：如setInt等 )替换语句中标记出来的参数
+		然后和常规语句一样，使用executeQuery 或  execute/executeUpdate 修改表中的数据
+			Connection connection = DriverManager.getConnection(url,username,password);
+			String template = "update music set price = ? where id = ?";
+			PreparedStatement statement = connection.prepareStatement(template);
+			statement.setFloat(1,11.11);
+			statement.setInt(2,6);
+			statement.execute();
+		为了避免SQL注入攻击,请使用预备语句或存储过程来更新数据库
+创建可调用语句
+	通过 CallableStatement，我们可以执行数据库中的存储过程或函数
+	基本步骤：
+		1.定义对数据库过程的调用
+			无参数过程
+				{ call procedureName }
+			仅有输入参数的过程
+				{ call procedureName(?,?,..) }
+			有一个输出参数的过程
+				{ ? call procedureName }
+			既有输入参数又有输出参数
+				{ ? = call procedureName(?,?,..) }
+			参数的索引值从输出参数开始,如果过程返回输出参数,那么输入参数的索引必须考虑输出参数的数目
+		2.为这个过程准备 CallableStatement
+			String procedure = "{ ? = call procedureName(?,?) }";
+			CallableStatement statement = connection.prepareCall(procedure);
+		3.注册输出参数的类型
+			必须使用registerOutParameter注册每个输出参数的JDBC类型
+			statement.registerOutParameter(n,type);
+				n对应输出参数的序号(以 1 为基准),type 对应 java.sql.Types类对应的常量
+		4.为输入参数提供值
+			statement.setString(2,"name");
+			statement.setFloat(3,6.6F);
+			切记,若有输出参数时,输入参数的索引从第一个输出参数计数
+		5.执行这个存储过程
+			调用 CallableStatement对象的execute方法
+			statement.execute();
+		6.访问返回的输出参数
+			通过访问getXxx访问每个对应的输出参数
+			int value = statement.getInt(1);
+使用数据库事务
+	在更新数据数时,默认更改是永久性地写入(或提交)到数据库,可通过编写程序来关闭
+	事务管理可以帮助确保数据库中表的一致性.数据库连接默认设置为自动交付：即每个已执行的语句都自动提交给数据库
+	调用 setAutoCommit(false)关闭连接的自动提交
+		在try块中调用 setAutoCommit(false) 执行一系列更新查询操作,如果发生故障在catch块中调用rollback,如果事务成功,则在try块的结尾调用commit。zaifinally块中重置自动提交的状态
+
+参考博客
+	http://www.cnblogs.com/wuyuegb2312/p/3872607.html
+	http://www.cnblogs.com/taoweiji/archive/2012/12/11/2812852.html
+  PreparedStatement和Statemnt的区别
+	   http://blog.chinaunix.net/uid-28811518-id-5747698.html
